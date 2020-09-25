@@ -55,20 +55,21 @@
 int main()
 {
   
-  int random_nums[10];
+  int random_nums[100];
   double arrival_rates[5] = {0.1, 0.3, 0.5, 0.7, 0.9};
   
   
-  for(int j=0; j<10; j++){
+  for(int j=0; j<100; j++){
 
     random_nums[j] = rand()%((999999+1)-100000); // Generate 50 random numbers to use as RANDOM_SEED values
     //printf("%d\n",random_nums[j]);
 
   }
 
-  for(int k=0; k<5; k++){
+  for(int k=0; k<9; k++){
       
-      double ARRIVAL_RATE = arrival_rates[k];
+      //double ARRIVAL_RATE = arrival_rates[k];
+	  double ARRIVAL_RATE = 0.95 +0.005*k; // Change k<9 to approach asymptote
       double sum =0;
      
   
@@ -160,9 +161,9 @@ int main()
 
         /* Output final results. */
         
-        printf("\nUtilization = %f\n", total_busy_time/clock);
+        /*printf("\nUtilization = %f\n", total_busy_time/clock);
         printf("Fraction served = %f\n", (double) total_served/total_arrived);
-        printf("Mean number in system = %f\n", integral_of_n/clock);
+        printf("Mean number in system = %f\n", integral_of_n/clock);*/
         printf("Mean delay = %f\n", integral_of_n/total_served);
         
         sum = sum + integral_of_n/total_served;
@@ -179,6 +180,10 @@ int main()
       printf("Average mean delay for %lf = %lf \n",ARRIVAL_RATE,average);
       
   }
+  
+  printf("Hit Enter to finish ... \n");
+  getchar();
+  
   return 0;
 }
 

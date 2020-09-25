@@ -69,11 +69,11 @@ int main()
   for(int k=0; k<9; k++){
       
       //double ARRIVAL_RATE = arrival_rates[k];
-	  double ARRIVAL_RATE = 0.95 +0.005*k; // Change k<9 to approach asymptote
+	    double ARRIVAL_RATE = 0.95 +0.005*k; // Change k<9 to approach asymptote
       double sum =0;
-     
+      double average =0;
   
-      for(int i=0+9*k; i<10+(10*k); i++) {
+      for(int i=0+10*k; i<10+10*k; i++) {
         
         
         double clock = 0; /* Clock keeps track of simulation time. */
@@ -176,8 +176,8 @@ int main()
 
       }
       
-      double average = sum/10;
-      printf("Average mean delay for %lf = %lf \n",ARRIVAL_RATE,average);
+      average = sum/10;
+      printf("***** Average mean delay for %lf = %lf *****\n",ARRIVAL_RATE,average);
       
   }
   

@@ -34,9 +34,12 @@
  */
 
 //#define RANDOM_SEED 400122166
+
 #define NUMBER_TO_SERVE 50e6
 
-#define SERVICE_TIME 1
+#define MAX_QUEUE_SIZE 10
+
+//#define SERVICE_TIME 30
 //#define ARRIVAL_RATE 0.1
 
 #define BLIP_RATE 10000
@@ -55,26 +58,34 @@
 int main()
 {
   
-  int random_nums[100];
-  double arrival_rates[5] = {0.1, 0.3, 0.5, 0.7, 0.9};
+  int random_nums[160];
+  double arrival_rates[16] = {0.20, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95}; 
+  //double arrival_rates[6] =  {0.005, 0.01, 0.015, 0.020, 0.025, 0.030};
   
-  
-  for(int j=0; j<100; j++){
+  for(int j=0; j<160; j++){
 
     random_nums[j] = rand()%((999999+1)-100000); // Generate 50 random numbers to use as RANDOM_SEED values
     //printf("%d\n",random_nums[j]);
 
   }
 
-  for(int k=0; k<9; k++){
+  for(int k=0; k<16; k++){
+    //for(int k=0; k<6; k++){
       
-      //double ARRIVAL_RATE = arrival_rates[k];
-	    double ARRIVAL_RATE = 0.95 +0.005*k; // Change k<9 to approach asymptote
+      double ARRIVAL_RATE = arrival_rates[k];
+      
+	    //double ARRIVAL_RATE = 0.95 +0.005*k; // Change k<9 to approach asymptote
+
+      //double ARRIVAL_RATE = 1.1; //Q3 
       double sum =0;
       double average =0;
   
-      for(int i=0+10*k; i<10+10*k; i++) {
-        
+      for(int i=0+10*k; i<10+10*k; i++) { // Q2 stuff
+      
+      //for(int i=0+1; i<10; i++) {  // Q2 stuff
+
+      //for(int i=0; i<10; i++) {  
+
         
         double clock = 0; /* Clock keeps track of simulation time. */
 
@@ -92,6 +103,7 @@ int main()
         double last_event_time = 0;
 
         int RANDOM_SEED = random_nums[i];
+        int rejected = 0;
         
         
         
@@ -100,30 +112,38 @@ int main()
         
         /* Set the seed of the random number generator. */
         random_generator_initialize(RANDOM_SEED);
+        double SERVICE_TIME = exponential_generator(1.0);
 
         /* Process customers until we are finished. */
         while (total_served < NUMBER_TO_SERVE) {
 
           /* Test if the next event is a customer arrival or departure. */
-        if(number_in_system == 0 || next_arrival_time < next_departure_time) {
+        if((number_in_system == 0 || next_arrival_time < next_departure_time){
 
           /*
             * A new arrival is occurring.
             */
 
-          clock = next_arrival_time;
-          next_arrival_time = clock + exponential_generator((double) 1/ARRIVAL_RATE);
+          if(number_in_system<=MAX_QUEUE_SIZE){
+            clock = next_arrival_time;
+            next_arrival_time = clock + exponential_generator((double) 1/ARRIVAL_RATE);
 
-          /* Update our statistics. */
-          integral_of_n += number_in_system * (clock - last_event_time);
-          last_event_time = clock;
+            /* Update our statistics. */
+            integral_of_n += number_in_system * (clock - last_event_time);
+            last_event_time = clock;
 
-          number_in_system++;
-          total_arrived++;
+            number_in_system++;
+            total_arrived++;
 
-          /* If this customer has arrived to an empty system, start its
-        service right away. */
-          if(number_in_system == 1) next_departure_time = clock + SERVICE_TIME;
+            /* If this customer has arrived to an empty system, start its
+          service right away. */
+            if(number_in_system == 1) next_departure_time = clock + SERVICE_TIME;
+
+        } else {
+
+          rejected++;
+
+        }
 
         } else {
 
@@ -177,6 +197,7 @@ int main()
       }
       
       average = sum/10;
+    
       printf("***** Average mean delay for %lf = %lf *****\n",ARRIVAL_RATE,average);
       
   }
